@@ -14,7 +14,7 @@ public class ExtraJump : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float diff = Time.deltaTime * (up ? 1 : -1);
+        float diff = Time.deltaTime * (up ? .5f : -.5f);
         transform.Translate(0, diff, 0);
     }
 

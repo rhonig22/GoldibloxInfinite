@@ -304,10 +304,8 @@ public class PlayerController : MonoBehaviour
         switch (SceneManager.GetActiveScene().buildIndex)
         {
             case 1:
-                canTeleport = false;
                 break;
             case 2:
-                DataManager.Instance.EndLevelTwo();
                 SceneManager.LoadScene(1);
                 break;
         }
