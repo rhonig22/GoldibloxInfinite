@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
-  m_Color: {r: 1, g: 0.7882353, b: 0.05490196, a: 1}
+  m_Color: {r: 1, g: 0.79607844, b: 0.050980393, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -118,7 +118,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 1043372682885978969}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: b7045e698d6aec54fa723e1e74bbbd0c, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -133,7 +133,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &1043372682885978974
 MonoBehaviour:
@@ -147,13 +147,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b50ee4879313d546a2417375c20357a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteRight: {fileID: -905887721, guid: 314b1cf08c5dae946b3ec3b3bcaf8e80, type: 3}
-  spriteLeft: {fileID: -184146557, guid: 314b1cf08c5dae946b3ec3b3bcaf8e80, type: 3}
   normalMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   translucent: {fileID: 2100000, guid: e374df8d3618a2d4c86682a2eec0ba74, type: 2}
   jumpSound: {fileID: 8300000, guid: 67984e07527bb3945942d36c3d7c483e, type: 3}
   dashSound: {fileID: 8300000, guid: fd5357ba0580dd449886ace592d1e062, type: 3}
   deathSound: {fileID: 8300000, guid: 8c8517f66a4704e4ab1c54bfc2249401, type: 3}
+  movementSmoothing: 0.05
   isEndgame: 0
   startEndCredits:
     m_PersistentCalls:
