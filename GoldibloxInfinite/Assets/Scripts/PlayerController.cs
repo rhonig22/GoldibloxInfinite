@@ -25,16 +25,21 @@ public class PlayerController : MonoBehaviour
     private float deathWaitTime = 1f;
     private float teleportCooldownTime = 1f;
     private float endGameWaitTime = 1.2f;
+    private float horizontalInput = 0f;
     private bool facingRight = true;
     private bool canTeleport = true;
     private bool grounded = false;
     private bool isTeleporting = false;
     private bool isDead = false;
+    private bool jump = false;
+    private bool teleport = false;
+    private Vector3 currentVelocity = Vector3.zero;
     [SerializeField] Material normalMaterial;
     [SerializeField] Material translucent;
     [SerializeField] private AudioClip jumpSound;
     [SerializeField] private AudioClip dashSound;
     [SerializeField] private AudioClip deathSound;
+    [Range(0, .3f)][SerializeField] private float movementSmoothing = .01f;
     public bool isEndgame = false;
     public UnityEvent startEndCredits = new UnityEvent();
 
@@ -55,14 +60,9 @@ public class PlayerController : MonoBehaviour
             return;
 
         if (isTeleporting)
-        {
-            float distance = GetRayCastDistance((facingRight ? 1 : -1) * teleportDistance * Time.deltaTime / teleportTime);
-            transform.Translate(Vector3.right * distance);
             return;
-        }
 
-        float horizontalInput = Input.GetAxis("Horizontal");
-        Vector2 currentVelocity = playerRB.velocity;
+        horizontalInput = Input.GetAxis("Horizontal");
         // Control the sprite for the character
         if (horizontalInput > 0 )
         {
@@ -74,24 +74,42 @@ public class PlayerController : MonoBehaviour
         }
 
         // Control movement and teleporting
-        if (Input.GetKeyDown(KeyCode.DownArrow) && canTeleport)
+        if (Input.GetButtonDown("Teleport") && canTeleport)
         {
-            currentVelocity.y = 0;
-            playerRB.velocity = currentVelocity;
-            isTeleporting = true;
-            spriteRenderer.material= translucent;
-            playerRB.gravityScale = 0;
-            audioSource.clip = dashSound;
-            audioSource.Play();
-            StartCoroutine(EndTeleport());
+            teleport = true;
         }
-        else if (horizontalInput != 0)
+
+        // Control jumping
+        if (Input.GetButtonDown("Jump") && (grounded || jumps > 0))
         {
-            float distance = GetRayCastDistance(horizontalInput*speed*Time.deltaTime);
-            transform.Translate(Vector3.right * distance);
+            jump = true;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (isTeleporting)
+        {
+            //float distance = GetRayCastDistance((facingRight ? 1 : -1) * teleportDistance * Time.deltaTime / teleportTime);
+            //transform.Translate(Vector3.right * distance);
+            Move((facingRight ? 1 : -1) * teleportDistance * Time.fixedDeltaTime / teleportTime);
+            return;
+        }
+
+        // Control movement and teleporting
+        if (teleport)
+        {
+            StartTeleport();
+        }
+        else // if (horizontalInput != 0)
+        {
+            //float distance = GetRayCastDistance(horizontalInput * speed * Time.deltaTime);
+            //transform.Translate(Vector3.right * distance);
+            Move(horizontalInput * speed * Time.fixedDeltaTime);
         }
 
         // Cap the player's max velocity
+        currentVelocity = playerRB.velocity;
         if (currentVelocity.y > maxVelocity)
         {
             currentVelocity.y = maxVelocity;
@@ -104,7 +122,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // Control jumping
-        if (Input.GetKeyDown(KeyCode.UpArrow) && (grounded || jumps > 0))
+        if (jump)
         {
             audioSource.clip = jumpSound;
             audioSource.Play();
@@ -114,7 +132,15 @@ public class PlayerController : MonoBehaviour
             if (!grounded)
                 jumps--;
             grounded = false;
+            jump = false;
         }
+    }
+
+    private void Move(float xSpeed)
+    {
+        Vector3 targetVelocity = new Vector2(xSpeed * 60f, playerRB.velocity.y);
+        // And then smoothing it out and applying it to the character
+        playerRB.velocity = Vector3.SmoothDamp(playerRB.velocity, targetVelocity, ref currentVelocity, movementSmoothing);
     }
 
     private float GetRayCastDistance(float testDistance)
@@ -170,6 +196,20 @@ public class PlayerController : MonoBehaviour
         grounded = false;
     }
 
+    private void StartTeleport()
+    {
+        currentVelocity = playerRB.velocity;
+        currentVelocity.y = 0;
+        playerRB.velocity = currentVelocity;
+        isTeleporting = true;
+        spriteRenderer.material = translucent;
+        playerRB.gravityScale = 0;
+        audioSource.clip = dashSound;
+        audioSource.Play();
+        StartCoroutine(EndTeleport());
+        teleport = false;
+    }
+
     private IEnumerator EndTeleport()
     {
         yield return new WaitForSeconds(teleportTime);
@@ -177,6 +217,9 @@ public class PlayerController : MonoBehaviour
         canTeleport = false;
         spriteRenderer.material = normalMaterial;
         playerRB.gravityScale = originalGravity;
+        currentVelocity = playerRB.velocity;
+        currentVelocity.x = 0;
+        playerRB.velocity = currentVelocity;
         StartCoroutine(RefreshTeleport());
     }
 
