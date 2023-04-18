@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private SpawnManager spawnManager;
     private AudioSource audioSource;
+    private Transform eyeTransform;
+    
     private int jumpForce = 10;
     private int additionalJumpForce = 8;
     private int speed = 8;
@@ -38,6 +40,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip jumpSound;
     [SerializeField] private AudioClip dashSound;
     [SerializeField] private AudioClip deathSound;
+    [SerializeField] private Animator animator;
+    [SerializeField] private GameObject eye;
     [Range(0, .3f)][SerializeField] private float movementSmoothing = .01f;
     public bool isEndgame = false;
     public UnityEvent startEndCredits = new UnityEvent();
@@ -50,6 +54,7 @@ public class PlayerController : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         spawnManager = GameObject.Find("SpawnManager")?.GetComponent<SpawnManager>();
         audioSource = GetComponent<AudioSource>();
+        eyeTransform = eye.GetComponent<Transform>();
     }
 
     // Update is called once per frame
@@ -63,13 +68,17 @@ public class PlayerController : MonoBehaviour
 
         horizontalInput = Input.GetAxis("Horizontal");
         // Control the sprite for the character
-        if (horizontalInput > 0 )
+        if (horizontalInput > 0 && !facingRight)
         {
             facingRight= true;
+            animator.SetBool("facingRight", true);
+            FlipEye(false);
         }
-        else if (horizontalInput < 0 )
+        else if (horizontalInput < 0 && facingRight)
         {
             facingRight= false;
+            animator.SetBool("facingRight", false);
+            FlipEye(false);
         }
 
         // Control movement and teleporting
@@ -135,10 +144,10 @@ public class PlayerController : MonoBehaviour
         currentVelocity = playerRB.velocity;
         currentVelocity.y = 0;
         playerRB.velocity = currentVelocity;
+        animator.SetBool("jumping", true);
         playerRB.AddForce(Vector3.up * (grounded ? jumpForce : additionalJumpForce), ForceMode2D.Impulse);
         if (!grounded)
             jumps--;
-        grounded = false;
         jump = false;
     }
 
@@ -147,36 +156,6 @@ public class PlayerController : MonoBehaviour
         Vector3 targetVelocity = new Vector2(xSpeed * 60f, playerRB.velocity.y);
         // And then smoothing it out and applying it to the character
         playerRB.velocity = Vector3.SmoothDamp(playerRB.velocity, targetVelocity, ref currentVelocity, movementSmoothing);
-    }
-
-    private float GetRayCastDistance(float testDistance)
-    {
-        Vector2 boxSize = boxCollider.size;
-        boxSize.y = 0;
-        Vector2 position = playerRB.position + (testDistance > 0 ? boxSize / 2 : -boxSize / 2);
-        RaycastHit2D[] hits = Physics2D.RaycastAll(position, Vector3.right * Math.Abs(testDistance)/testDistance, testDistance);
-        int index = 0;
-        bool found = false;
-        for (int i = 0; i < hits.Length; i++)
-        {
-            RaycastHit2D hit = hits[i];
-            if (hit.collider != boxCollider && hit.collider != null && hit.rigidbody != null && !hit.collider.CompareTag("Spike"))
-            {
-                found = true;
-                index = i;
-                break;
-            }
-        }
-
-        if (found)
-        {
-            float dist = hits[index].distance;
-            return dist;
-        }
-        else
-        {
-            return testDistance;
-        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -190,10 +169,16 @@ public class PlayerController : MonoBehaviour
 
     private void CheckGrounding(Collision2D collision)
     {
+        bool startGrounded = grounded;
         for (int i = 0; i < collision.contactCount; i++)
         {
             Vector2 normal = collision.GetContact(i).normal;
             grounded |= Vector2.Angle(normal, Vector2.up) < 90;
+        }
+
+        if (!startGrounded && grounded)
+        {
+            animator.SetBool("jumping",false);
         }
     }
 
@@ -212,6 +197,8 @@ public class PlayerController : MonoBehaviour
         playerRB.gravityScale = 0;
         audioSource.clip = dashSound;
         audioSource.Play();
+        animator.SetBool("isDashing", true);
+        animator.SetBool("jumping", false);
         StartCoroutine(EndTeleport());
         teleport = false;
     }
@@ -226,7 +213,19 @@ public class PlayerController : MonoBehaviour
         currentVelocity = playerRB.velocity;
         currentVelocity.x = 0;
         playerRB.velocity = currentVelocity;
+        animator.SetBool("isDashing", false);
         StartCoroutine(RefreshTeleport());
+    }
+
+    private void FlipEye(bool verticalFlip)
+    {
+        Vector3 pos = eyeTransform.position;
+        eyeTransform.GetLocalPositionAndRotation(out pos, out Quaternion rotation);
+        if (!verticalFlip)
+            pos.x = -1 * pos.x;
+        if (verticalFlip)
+            pos.y = -1 * pos.y;
+        eyeTransform.SetLocalPositionAndRotation(pos, rotation);
     }
 
     private IEnumerator RefreshTeleport()
@@ -282,12 +281,10 @@ public class PlayerController : MonoBehaviour
     {
         isDead= true;
         DataManager.Instance.IncreaseDeath();
-        Vector2 currentVelocity = playerRB.velocity;
-        currentVelocity.y = 0;
-        playerRB.velocity = currentVelocity;
-        float xForce = UnityEngine.Random.Range(-2f, 2f);
-        playerRB.AddForce(Vector3.up * jumpForce + Vector3.right * xForce, ForceMode2D.Impulse);
-        spriteRenderer.flipY = true;
+        playerRB.velocity = Vector2.zero;
+        playerRB.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+        animator.SetBool("isDead", true);
+        FlipEye(true);
         audioSource.clip = deathSound;
         audioSource.Play();
         StartCoroutine(Restart());
@@ -301,14 +298,7 @@ public class PlayerController : MonoBehaviour
 
     public void EndLevelLogic()
     {
-        switch (SceneManager.GetActiveScene().buildIndex)
-        {
-            case 1:
-                break;
-            case 2:
-                SceneManager.LoadScene(1);
-                break;
-        }
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
     public void EndGameLogic()

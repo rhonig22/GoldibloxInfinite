@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Infinite.unity
     guid: 9281ab039032d9449a6fda642ee456c2
+  - enabled: 1
+    path: Assets/Scenes/Rooms - South/S1.unity
+    guid: d306f1209009dbc4aadf56167b6a96bd
   m_configObjects: {}
