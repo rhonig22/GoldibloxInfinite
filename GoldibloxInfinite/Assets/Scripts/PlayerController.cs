@@ -24,7 +24,6 @@ public class PlayerController : MonoBehaviour
     private float maxVelocity = 12f;
     private float deathWaitTime = 1f;
     private float teleportCooldownTime = 1f;
-    private float endGameWaitTime = 1.2f;
     private float horizontalInput = 0f;
     private bool facingRight = true;
     private bool canTeleport = true;
@@ -90,8 +89,6 @@ public class PlayerController : MonoBehaviour
     {
         if (isTeleporting)
         {
-            //float distance = GetRayCastDistance((facingRight ? 1 : -1) * teleportDistance * Time.deltaTime / teleportTime);
-            //transform.Translate(Vector3.right * distance);
             Move((facingRight ? 1 : -1) * teleportDistance * Time.fixedDeltaTime / teleportTime);
             return;
         }
@@ -101,14 +98,23 @@ public class PlayerController : MonoBehaviour
         {
             StartTeleport();
         }
-        else // if (horizontalInput != 0)
+        else
         {
-            //float distance = GetRayCastDistance(horizontalInput * speed * Time.deltaTime);
-            //transform.Translate(Vector3.right * distance);
             Move(horizontalInput * speed * Time.fixedDeltaTime);
         }
 
         // Cap the player's max velocity
+        CapYVelocity();
+
+        // Control jumping
+        if (jump)
+        {
+            StartJump();
+        }
+    }
+
+    private void CapYVelocity()
+    {
         currentVelocity = playerRB.velocity;
         if (currentVelocity.y > maxVelocity)
         {
@@ -120,20 +126,20 @@ public class PlayerController : MonoBehaviour
             currentVelocity.y = -maxVelocity;
             playerRB.velocity = currentVelocity;
         }
+    }
 
-        // Control jumping
-        if (jump)
-        {
-            audioSource.clip = jumpSound;
-            audioSource.Play();
-            currentVelocity.y = 0;
-            playerRB.velocity = currentVelocity;
-            playerRB.AddForce(Vector3.up * (grounded ? jumpForce : additionalJumpForce), ForceMode2D.Impulse);
-            if (!grounded)
-                jumps--;
-            grounded = false;
-            jump = false;
-        }
+    private void StartJump()
+    {
+        audioSource.clip = jumpSound;
+        audioSource.Play();
+        currentVelocity = playerRB.velocity;
+        currentVelocity.y = 0;
+        playerRB.velocity = currentVelocity;
+        playerRB.AddForce(Vector3.up * (grounded ? jumpForce : additionalJumpForce), ForceMode2D.Impulse);
+        if (!grounded)
+            jumps--;
+        grounded = false;
+        jump = false;
     }
 
     private void Move(float xSpeed)
@@ -298,7 +304,6 @@ public class PlayerController : MonoBehaviour
         switch (SceneManager.GetActiveScene().buildIndex)
         {
             case 1:
-                GameObject.Find("EndLevelManager").GetComponent<EndLevel1Manager>().Activate();
                 canTeleport = false;
                 break;
             case 2:
@@ -312,14 +317,5 @@ public class PlayerController : MonoBehaviour
     {
         isDead = true;
         isEndgame = true;
-        StartCoroutine(StartEyeAnimation());
-    }
-
-    private IEnumerator StartEyeAnimation()
-    {
-        yield return new WaitForSeconds(endGameWaitTime);
-        GameObject eyeBlock = GameObject.Find("EyeBlock");
-        eyeBlock.GetComponent<Animator>().SetTrigger("EndGame");
-        startEndCredits.Invoke();
     }
 }
