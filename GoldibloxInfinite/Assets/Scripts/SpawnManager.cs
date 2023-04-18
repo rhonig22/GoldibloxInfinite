@@ -11,13 +11,7 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (SceneManager.GetActiveScene().buildIndex == 1)
-        {
-            if (DataManager.finishedLevel2)
-                ResetPlayerLocation(0);
-        }
-        else
-            ResetPlayerLocation(DataManager.currentCheckPointIndex);
+        ResetPlayerLocation(DataManager.currentCheckPointIndex);
     }
 
     public void ResetPlayerLocation(int index)
