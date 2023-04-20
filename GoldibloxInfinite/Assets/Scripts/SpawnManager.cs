@@ -7,6 +7,8 @@ public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] checkpoints;
     [SerializeField] private GameObject player;
+    [SerializeField] public bool isStartAtSouth = false;
+    private Vector2 southStartVelocity = Vector2.up * 10;
 
     // Start is called before the first frame update
     void Start()
@@ -16,11 +18,21 @@ public class SpawnManager : MonoBehaviour
 
     public void ResetPlayerLocation(int index)
     {
+        Vector3 startPosition = transform.position;
+        startPosition.z = player.transform.position.z;
         if (index < checkpoints.Length)
         {
-            Vector3 startPosition = checkpoints[index].transform.position;
-            startPosition.z = player.transform.position.z;
-            player.transform.position = startPosition;
+            startPosition = checkpoints[index].transform.position;
+        }
+        
+        player.transform.position = startPosition;
+        if (isStartAtSouth)
+        {
+            player.GetComponent<Rigidbody2D>().velocity = southStartVelocity;
+        }
+        else
+        {
+            player.GetComponent<Rigidbody2D>().velocity = DataManager.playerVelocity;
         }
     }
 
