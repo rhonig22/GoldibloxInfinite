@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private SpawnManager spawnManager;
     private AudioSource audioSource;
     private Transform eyeTransform;
+    private LevelLoader levelLoader;
     
     private int jumpForce = 10;
     private int additionalJumpForce = 8;
@@ -42,7 +43,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip deathSound;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject eye;
-    [Range(0, .3f)][SerializeField] private float movementSmoothing = .01f;
+    [Range(0, .3f)][SerializeField] private float movementSmoothing = .001f;
     public bool isEndgame = false;
     public UnityEvent startEndCredits = new UnityEvent();
 
@@ -55,6 +56,7 @@ public class PlayerController : MonoBehaviour
         spawnManager = GameObject.Find("SpawnManager")?.GetComponent<SpawnManager>();
         audioSource = GetComponent<AudioSource>();
         eyeTransform = eye.GetComponent<Transform>();
+        levelLoader = GameObject.Find("LevelLoader")?.GetComponent<LevelLoader>();
     }
 
     // Update is called once per frame
@@ -283,8 +285,8 @@ public class PlayerController : MonoBehaviour
         DataManager.Instance.IncreaseDeath();
         playerRB.velocity = Vector2.zero;
         playerRB.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
-        animator.SetBool("isDead", true);
         FlipEye(true);
+        animator.SetBool("isDead", true);
         audioSource.clip = deathSound;
         audioSource.Play();
         StartCoroutine(Restart());
@@ -298,7 +300,7 @@ public class PlayerController : MonoBehaviour
 
     public void EndLevelLogic()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        levelLoader.LoadNextLevel();
     }
 
     public void EndGameLogic()
