@@ -17,16 +17,17 @@ public class PlayerController : MonoBehaviour
     private Transform eyeTransform;
     private LevelLoader levelLoader;
     
-    private int jumpForce = 10;
+    private int jumpForce = 11;
     private int additionalJumpForce = 8;
     private int speed = 8;
     private int jumps = 0;
+    private int additionalTime = 0;
     private const int originalGravity = 2;
-    private float teleportDistance = 3.5f;
+    private float teleportDistance = 2.5f;
     private float teleportTime = .2f;
     private float maxVelocity = 12f;
     private float deathWaitTime = 1f;
-    private float teleportCooldownTime = 1f;
+    private float teleportCooldownTime = .8f;
     private float horizontalInput = 0f;
     private bool facingRight = true;
     private bool canTeleport = true;
@@ -43,7 +44,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip deathSound;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject eye;
-    [Range(0, .3f)][SerializeField] private float movementSmoothing = .001f;
+    private float movementSmoothing = .001f;
     public bool isEndgame = false;
     public UnityEvent startEndCredits = new UnityEvent();
 
@@ -146,10 +147,15 @@ public class PlayerController : MonoBehaviour
         currentVelocity = playerRB.velocity;
         currentVelocity.y = 0;
         playerRB.velocity = currentVelocity;
+        if (!grounded)
+        {
+            jumps--;
+            animator.SetBool("jumping", false);
+        }
+
         animator.SetBool("jumping", true);
         playerRB.AddForce(Vector3.up * (grounded ? jumpForce : additionalJumpForce), ForceMode2D.Impulse);
-        if (!grounded)
-            jumps--;
+
         jump = false;
     }
 
@@ -178,9 +184,11 @@ public class PlayerController : MonoBehaviour
             grounded |= Vector2.Angle(normal, Vector2.up) < 90;
         }
 
-        if (!startGrounded && grounded)
+        if (!startGrounded && grounded && !isDead)
         {
             animator.SetBool("jumping",false);
+            jumps = 0;
+            CompleteAddTimeLogic();
         }
     }
 
@@ -267,6 +275,11 @@ public class PlayerController : MonoBehaviour
             EndGameLogic();
         }
 
+        if (collision.gameObject.CompareTag("AddTime"))
+        {
+            AddTimeLogic();
+            Destroy(collision.gameObject);
+        }
 
         if (collision.gameObject.CompareTag("StartTimer"))
         {
@@ -285,11 +298,28 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void AddTimeLogic()
+    {
+        additionalTime++;
+    }
+
+    private void CompleteAddTimeLogic()
+    {
+        if (additionalTime > 0)
+        {
+            DataManager.Instance.AddTime(additionalTime);
+            additionalTime = 0;
+        }
+    }
+
     public void PlayerDeath()
     {
         isDead= true;
         DataManager.Instance.IncreaseDeath();
-        playerRB.velocity = Vector2.zero;
+        currentVelocity = playerRB.velocity;
+        currentVelocity.x = 0;
+        currentVelocity.y = 0;
+        playerRB.velocity = currentVelocity;
         playerRB.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
         FlipEye(true);
         animator.SetBool("isDead", true);
@@ -306,6 +336,7 @@ public class PlayerController : MonoBehaviour
 
     public void EndLevelLogic()
     {
+        CompleteAddTimeLogic();
         DataManager.Instance.IncreaseRooms();
         levelLoader.LoadNextLevel();
     }

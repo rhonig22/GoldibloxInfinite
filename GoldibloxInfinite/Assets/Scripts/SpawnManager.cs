@@ -9,30 +9,34 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] public bool isStartAtSouth = false;
     private Vector2 southStartVelocity = Vector2.up * 10;
+    private GameObject playerInstance;
+    private float transitionWaitTime = .25f;
 
     // Start is called before the first frame update
     void Start()
     {
+        playerInstance = Instantiate(player);
         ResetPlayerLocation(DataManager.currentCheckPointIndex);
+        StartCoroutine(StartPlayer());
     }
 
     public void ResetPlayerLocation(int index)
     {
         Vector3 startPosition = transform.position;
-        startPosition.z = player.transform.position.z;
+        startPosition.z = playerInstance.transform.position.z;
         if (index < checkpoints.Length)
         {
             startPosition = checkpoints[index].transform.position;
         }
-        
-        player.transform.position = startPosition;
+
+        playerInstance.transform.position = startPosition;
         if (isStartAtSouth)
         {
-            player.GetComponent<Rigidbody2D>().velocity = southStartVelocity;
+            playerInstance.GetComponent<Rigidbody2D>().velocity = southStartVelocity;
         }
         else
         {
-            player.GetComponent<Rigidbody2D>().velocity = DataManager.playerVelocity;
+            playerInstance.GetComponent<Rigidbody2D>().velocity = DataManager.playerVelocity;
         }
     }
 
@@ -43,5 +47,11 @@ public class SpawnManager : MonoBehaviour
             if (checkpoints[i] == checkpoint)
                 DataManager.Instance.SetCheckPointIndex(i);
         }
+    }
+
+    IEnumerator StartPlayer()
+    {
+        yield return new WaitForSeconds(transitionWaitTime);
+        playerInstance.GetComponent<Rigidbody2D>().simulated = true;
     }
 }

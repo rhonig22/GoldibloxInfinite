@@ -100,7 +100,7 @@ Rigidbody2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1043372682885978969}
   m_BodyType: 0
-  m_Simulated: 1
+  m_Simulated: 0
   m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 1
@@ -157,7 +157,6 @@ MonoBehaviour:
   deathSound: {fileID: 8300000, guid: 8c8517f66a4704e4ab1c54bfc2249401, type: 3}
   animator: {fileID: -3141761027747822828}
   eye: {fileID: 6156912039288116324}
-  movementSmoothing: 0.05
   isEndgame: 0
   startEndCredits:
     m_PersistentCalls:
@@ -284,7 +283,7 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   m_ShapePathHash: 0
   m_Mesh: {fileID: 0}
-  m_InstanceId: 71560
+  m_InstanceId: -8164
 --- !u!95 &-3141761027747822828
 Animator:
   serializedVersion: 5

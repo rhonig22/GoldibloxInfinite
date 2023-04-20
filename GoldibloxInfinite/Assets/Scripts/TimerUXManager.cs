@@ -8,8 +8,8 @@ public class TimerUXManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI timerText;
     [SerializeField] TextMeshProUGUI deathText;
     [SerializeField] TextMeshProUGUI roomsText;
-    private readonly Color redCountdown = new Color(255, 25, 25);
-    private readonly Color standardColor = new Color(255, 203, 13);
+    private readonly Color32 redCountdown = new Color32(255, 25, 25, 255);
+    private readonly Color32 standardColor = new Color32(255, 203, 13, 255);
 
     // Update is called once per frame
     void Update()
