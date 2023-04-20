@@ -266,6 +266,12 @@ public class PlayerController : MonoBehaviour
         {
             EndGameLogic();
         }
+
+
+        if (collision.gameObject.CompareTag("StartTimer"))
+        {
+            DataManager.Instance.StartTimer();
+        }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
@@ -300,6 +306,7 @@ public class PlayerController : MonoBehaviour
 
     public void EndLevelLogic()
     {
+        DataManager.Instance.IncreaseRooms();
         levelLoader.LoadNextLevel();
     }
 
