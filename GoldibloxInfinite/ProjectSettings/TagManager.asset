@@ -10,6 +10,7 @@ TagManager:
   - Jump
   - EndGame
   - EndTrigger
+  - StartTimer
   layers:
   - Default
   - TransparentFX
