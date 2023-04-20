@@ -11,6 +11,7 @@ TagManager:
   - EndGame
   - EndTrigger
   - StartTimer
+  - AddTime
   layers:
   - Default
   - TransparentFX

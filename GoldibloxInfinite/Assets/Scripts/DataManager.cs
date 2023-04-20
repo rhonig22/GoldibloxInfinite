@@ -18,6 +18,7 @@ public class DataManager : MonoBehaviour
     public static float timer { get; private set; } = 60;
     public static UnityEvent gameOver = new UnityEvent();
     private static bool countdownOn = false;
+    private readonly int plusTime = 10;
 
     // Start is called before the first frame update
     void Start()
@@ -70,6 +71,13 @@ public class DataManager : MonoBehaviour
     public void StartTimer()
     {
         countdownOn= true;
+    }
+
+    public void AddTime(int count)
+    {
+        int addedTime = count * plusTime;
+        timer += addedTime;
+        totalTime += addedTime;
     }
 
     public void Restart()
