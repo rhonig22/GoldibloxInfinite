@@ -23,7 +23,8 @@ public class TimerUXManager : MonoBehaviour
 
     void UpdateText()
     {
-        timerText.text = "Countdown: " + DataManager.timer.ToString("0");
+        if (DataManager.countdownOn)
+            timerText.text = "Countdown: " + DataManager.timer.ToString("0");
         deathText.text = "Deaths: " + DataManager.deathCount;
         roomsText.text = "Rooms: " + DataManager.roomCount;
     }
