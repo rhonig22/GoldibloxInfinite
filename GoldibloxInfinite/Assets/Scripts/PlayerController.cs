@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     private LevelLoader levelLoader;
     
     private int jumpForce = 11;
-    private int additionalJumpForce = 8;
+    private int additionalJumpForce = 9;
     private int speed = 8;
     private int jumps = 0;
     private int additionalTime = 0;

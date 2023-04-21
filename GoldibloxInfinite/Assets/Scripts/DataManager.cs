@@ -11,13 +11,13 @@ public class DataManager : MonoBehaviour
     public static int roomCount { get; private set; } = 0;
     public static int bonusCount { get; private set; } = 0;
     public static int totalTime { get; private set; } = 60;
+    public static bool countdownOn { get; private set; } = false;
     public static Vector2 playerVelocity { get; private set; }
     public static Vector3 playerPosition { get; private set; }
 
     public static int currentLevel = 1;
     public static float timer { get; private set; } = 60;
     public static UnityEvent gameOver = new UnityEvent();
-    private static bool countdownOn = false;
     private readonly int plusTime = 10;
 
     // Start is called before the first frame update
@@ -70,7 +70,7 @@ public class DataManager : MonoBehaviour
 
     public void StartTimer()
     {
-        countdownOn= true;
+        countdownOn = true;
     }
 
     public void AddTime(int count)
