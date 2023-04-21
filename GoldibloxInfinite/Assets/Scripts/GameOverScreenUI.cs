@@ -23,7 +23,9 @@ public class GameOverScreenUI : MonoBehaviour
         deathScore.text = DataManager.deathCount + " x " + deathValue;
         timeScore.text = DataManager.totalTime + " x " + timeValue;
         bonusScore.text = DataManager.bonusCount + " x " + bonusValue;
-        totalScore.text = "" + (DataManager.roomCount * roomValue + DataManager.deathCount * deathValue + DataManager.totalTime * timeValue + DataManager.bonusCount * bonusValue);
+        int total = (DataManager.roomCount * roomValue + DataManager.deathCount * deathValue + DataManager.totalTime * timeValue + DataManager.bonusCount * bonusValue);
+        totalScore.text = "" + total;
+        DataManager.Instance.SubmitLootLockerScore(total);
     }
 
     public void StartGame()

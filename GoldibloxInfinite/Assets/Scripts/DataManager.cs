@@ -1,3 +1,5 @@
+using LootLocker.Requests;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,13 +14,16 @@ public class DataManager : MonoBehaviour
     public static int bonusCount { get; private set; } = 0;
     public static int totalTime { get; private set; } = 60;
     public static bool countdownOn { get; private set; } = false;
+    public static UserData playerData { get; private set; }
     public static Vector2 playerVelocity { get; private set; }
     public static Vector3 playerPosition { get; private set; }
 
     public static int currentLevel = 1;
     public static float timer { get; private set; } = 60;
     public static UnityEvent gameOver = new UnityEvent();
+    public static UnityEvent userDataRetrieved = new UnityEvent();
     private readonly int plusTime = 10;
+    private readonly string leaderboardID = "goldiblox_leaderboard";
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +37,7 @@ public class DataManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        StartLootLockerSession();
     }
 
     private void Update()
@@ -89,5 +95,69 @@ public class DataManager : MonoBehaviour
         bonusCount = 0;
         countdownOn = false;
         timer = 60;
+    }
+
+    private void StartLootLockerSession()
+    {
+        LootLockerSDKManager.StartGuestSession((response) =>
+        {
+            if (!response.success)
+            {
+                Debug.Log("error starting LootLocker session");
+                return;
+            }
+
+            SetUserData("", response.player_identifier);
+            LootLockerSDKManager.GetPlayerName((response) =>
+            {
+                if (!response.success)
+                {
+                    return;
+                }
+
+                playerData.UserName = response.name;
+                userDataRetrieved.Invoke();
+                Debug.Log("successfully started LootLocker session");
+            });
+
+            Debug.Log("successfully started LootLocker session");
+        });
+    }
+
+    public void SubmitLootLockerScore(int score)
+    {
+        LootLockerSDKManager.SubmitScore(playerData.UserId, score, leaderboardID, (response) =>
+        {
+            if (response.statusCode == 200)
+            {
+                Debug.Log("Successful");
+            }
+            else
+            {
+                Debug.Log("failed: " + response.Error);
+            }
+        });
+    }
+
+    public void SetUserName(string username)
+    {
+        LootLockerSDKManager.SetPlayerName(username, (response) =>
+        {
+            if (!response.success)
+            {
+                return;
+            }
+
+            playerData.UserName = username;
+            Debug.Log("successfully started LootLocker session");
+        });
+    }
+
+    private void SetUserData(string name, string id)
+    {
+        playerData = new UserData {
+            UserName = name,
+            UserId = id
+        };
     }
 }
