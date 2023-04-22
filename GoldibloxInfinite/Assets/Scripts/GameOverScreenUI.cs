@@ -15,14 +15,25 @@ public class GameOverScreenUI : MonoBehaviour
     private int deathValue = -20;
     private int timeValue = 1;
     private int bonusValue = 200;
+    private float waitTime = .5f;
 
     // Start is called before the first frame update
     void Start()
     {
+        StartCoroutine(LoadScores());
+    }
+
+    private IEnumerator LoadScores()
+    {
+        yield return new WaitForSeconds(waitTime);
         roomScore.text = DataManager.roomCount + " x " + roomValue;
+        yield return new WaitForSeconds(waitTime);
         deathScore.text = DataManager.deathCount + " x " + deathValue;
+        yield return new WaitForSeconds(waitTime);
         timeScore.text = DataManager.totalTime + " x " + timeValue;
+        yield return new WaitForSeconds(waitTime);
         bonusScore.text = DataManager.bonusCount + " x " + bonusValue;
+        yield return new WaitForSeconds(waitTime);
         int total = (DataManager.roomCount * roomValue + DataManager.deathCount * deathValue + DataManager.totalTime * timeValue + DataManager.bonusCount * bonusValue);
         totalScore.text = "" + total;
         DataManager.Instance.SubmitLootLockerScore(total);
@@ -31,6 +42,6 @@ public class GameOverScreenUI : MonoBehaviour
     public void StartGame()
     {
         DataManager.Instance.Restart();
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(LevelLoader.startLevel);
     }
 }

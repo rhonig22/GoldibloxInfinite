@@ -9,7 +9,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] public bool isStartAtSouth = false;
     private Vector2 southStartVelocity = Vector2.up * 10;
-    private GameObject playerInstance;
+    public GameObject playerInstance { get; private set; }
     private float transitionWaitTime = .25f;
 
     // Start is called before the first frame update

@@ -33,8 +33,6 @@ public class PlayerController : MonoBehaviour
     private bool facingRight = true;
     private bool canTeleport = true;
     private bool grounded = false;
-    private bool isTeleporting = false;
-    private bool isDead = false;
     private bool jump = false;
     private bool teleport = false;
     private Vector3 currentVelocity = Vector3.zero;
@@ -46,7 +44,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject eye;
     private float movementSmoothing = .001f;
-    public bool isEndgame = false;
+    public bool isEndgame { get; private set; } = false;
+    public bool isTeleporting { get; private set; } = false;
+    public bool isDead { get; private set; } = false;
     public UnityEvent startEndCredits = new UnityEvent();
 
     // Start is called before the first frame update
