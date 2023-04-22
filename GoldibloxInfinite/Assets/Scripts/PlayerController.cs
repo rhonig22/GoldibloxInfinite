@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -150,10 +151,10 @@ public class PlayerController : MonoBehaviour
         if (!grounded)
         {
             jumps--;
-            animator.SetBool("jumping", false);
+            animator.ResetTrigger("jump");
         }
 
-        animator.SetBool("jumping", true);
+        animator.SetTrigger("jump");
         playerRB.AddForce(Vector3.up * (grounded ? jumpForce : additionalJumpForce), ForceMode2D.Impulse);
 
         jump = false;
@@ -186,7 +187,7 @@ public class PlayerController : MonoBehaviour
 
         if (!startGrounded && grounded && !isDead)
         {
-            animator.SetBool("jumping",false);
+            animator.ResetTrigger("jump");
             jumps = 0;
             CompleteAddTimeLogic();
         }
@@ -208,7 +209,7 @@ public class PlayerController : MonoBehaviour
         audioSource.clip = dashSound;
         audioSource.Play();
         animator.SetBool("isDashing", true);
-        animator.SetBool("jumping", false);
+        animator.ResetTrigger("jump");
         StartCoroutine(EndTeleport());
         teleport = false;
     }
@@ -254,6 +255,11 @@ public class PlayerController : MonoBehaviour
             PlayerDeath();
         }
 
+        if (collision.gameObject.CompareTag("Enemy") && !isTeleporting)
+        {
+            TestLightCollision(collision);
+        }
+
         if (collision.gameObject.CompareTag("Jump"))
         {
             Destroy(collision.gameObject);
@@ -296,6 +302,11 @@ public class PlayerController : MonoBehaviour
         {
             PlayerDeath();
         }
+
+        if (collision.gameObject.CompareTag("Enemy") && !isTeleporting)
+        {
+            TestLightCollision(collision);
+        }
     }
 
     private void AddTimeLogic()
@@ -310,6 +321,66 @@ public class PlayerController : MonoBehaviour
             DataManager.Instance.AddTime(additionalTime);
             additionalTime = 0;
         }
+    }
+
+    private void TestLightCollision(Collider2D collision)
+    {
+        Vector3 enemyPos = collision.transform.parent.transform.position;
+        Vector3 pos = transform.position;
+        enemyPos.z = 0;
+        pos.z = 0;
+        bool blocked = true;
+        Vector2 size = boxCollider.size;
+        // Check each corner of the player, if the corner is within the collision, raytrace to the source to test if the line of site is free
+        // top left
+        pos += new Vector3(-size.x/2, size.y/2, 0);
+        if (collision.OverlapPoint(pos))
+        {
+            blocked &= FindNonCollisionHit(collision, pos, enemyPos - pos);
+        }
+
+        // top right
+        pos += new Vector3(size.x, 0, 0);
+        if (collision.OverlapPoint(pos))
+        {
+            blocked &= FindNonCollisionHit(collision, pos, enemyPos - pos);
+        }
+
+        // bottom right
+        pos += new Vector3(0, -size.y, 0);
+        if (collision.OverlapPoint(pos))
+        {
+            blocked &= FindNonCollisionHit(collision, pos, enemyPos - pos);
+        }
+
+        // bottom left
+        pos += new Vector3(-size.x,0, 0);
+        if (collision.OverlapPoint(pos))
+        {
+            blocked &= FindNonCollisionHit(collision, pos, enemyPos - pos);
+        }
+
+        if (!blocked)
+        {
+            PlayerDeath();
+        }
+    }
+
+    private bool FindNonCollisionHit(Collider2D collision, Vector3 position, Vector3 direction)
+    {
+        RaycastHit2D[] hits = Physics2D.RaycastAll(position, direction, direction.magnitude);
+        bool blocked = false;
+        for (int i = 0; i < hits.Length; i++)
+        {
+            RaycastHit2D hit = hits[i];
+            if (hit.collider != boxCollider && hit.collider != collision)
+            {
+                blocked = true;
+                break;
+            }
+        }
+
+        return blocked;
     }
 
     public void PlayerDeath()

@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Scenes/GameOverScreen.unity
     guid: aefc25d2e25f0844ca910d342875df81
   - enabled: 1
-    path: Assets/Scenes/Rooms - South/S1.unity
+    path: Assets/Scenes/Rooms - South/StartRoom.unity
     guid: d306f1209009dbc4aadf56167b6a96bd
   - enabled: 1
     path: Assets/Scenes/Rooms - West/W1.unity
@@ -27,9 +27,18 @@ EditorBuildSettings:
     path: Assets/Scenes/Rooms - West/W2.unity
     guid: 2934822d116141a459bd21cae2405902
   - enabled: 1
-    path: Assets/Scenes/Rooms - East/E1.unity
-    guid: 411cc83331a267449a3df0d6c2b60885
+    path: Assets/Scenes/Rooms - East/E2.unity
+    guid: 696edff3021ae9842976cd2ca69c9b7d
   - enabled: 1
     path: Assets/Scenes/Rooms - South/S2.unity
     guid: 4b1cc063d296e4c4b904481870f907c8
+  - enabled: 1
+    path: Assets/Scenes/Rooms - North/N2.unity
+    guid: ca73529dee78c644dba585959c824fa0
+  - enabled: 1
+    path: Assets/Scenes/Rooms - East/E1.unity
+    guid: 411cc83331a267449a3df0d6c2b60885
+  - enabled: 1
+    path: Assets/Scenes/Rooms - South/S3.unity
+    guid: 04eaad85a50dfdb4685bc39b7b11be95
   m_configObjects: {}
