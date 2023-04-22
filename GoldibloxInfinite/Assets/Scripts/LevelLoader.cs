@@ -7,10 +7,15 @@ public class LevelLoader : MonoBehaviour
 {
     [SerializeField] private GameObject crossfade;
     private Animator crossfadeAnimator;
-    private readonly int startLevel = 1;
-    private readonly int startTimerLevel = 3;
+    public static readonly int mainMenu = 1;
+    public static readonly int gameOverMenu = 4;
+    public static readonly int leaderboard = 2;
+    public static readonly int startLevel = 3;
+    public static readonly int startTimerLevel = 5;
     private readonly float waitTime = .25f;
-    private readonly int[] levelTypeList = new int[] { -1, -1, -1, 1, 2, 1, 3, 0, 1, 1, 2, 3 };
+    private readonly int[] levelTypeList = new int[] { 
+        -1, -1, -1, -1, -1, 1, 2, 1, 3, 0,
+        1, 1, 2, 3, 3, 0, 2 };
     private int[][] levelMap = new int[4][];
     private bool isLoading = false;
 
@@ -18,10 +23,10 @@ public class LevelLoader : MonoBehaviour
     void Start()
     {
         DataManager.currentLevel = SceneManager.GetActiveScene().buildIndex;
-        levelMap[0] = new int[] { 8, 11 };
-        levelMap[1] = new int[] { 4, 6 };
-        levelMap[2] = new int[] { 5, 9 };
-        levelMap[3] = new int[] { 7, 10 };
+        levelMap[0] = new int[] { 10, 13 };
+        levelMap[1] = new int[] { 6, 8 };
+        levelMap[2] = new int[] { 7, 11, 14, 15, 16 };
+        levelMap[3] = new int[] { 9, 12 };
         crossfadeAnimator = crossfade.GetComponent<Animator>();
         DataManager.gameOver.AddListener(GameOver);
     }
@@ -56,6 +61,6 @@ public class LevelLoader : MonoBehaviour
 
     public void GameOver()
     {
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene(gameOverMenu);
     }
 }

@@ -1,5 +1,6 @@
 using LootLocker.Requests;
 using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -139,16 +140,18 @@ public class DataManager : MonoBehaviour
         });
     }
 
-    public void SetUserName(string username)
+    public void SetUserName(string username, Action<string> callback)
     {
         LootLockerSDKManager.SetPlayerName(username, (response) =>
         {
             if (!response.success)
             {
+                callback(null);
                 return;
             }
 
             playerData.UserName = username;
+            callback(username);
             Debug.Log("successfully started LootLocker session");
         });
     }
@@ -159,5 +162,21 @@ public class DataManager : MonoBehaviour
             UserName = name,
             UserId = id
         };
+    }
+
+    public void GetHighScores(int count, Action<LootLockerLeaderboardMember[]> callback)
+    {
+        LootLockerSDKManager.GetScoreList(leaderboardID, count, 0, (response) =>
+        {
+            if (response.statusCode == 200)
+            {
+                Debug.Log("Successful");
+                callback(response.items);
+            }
+            else
+            {
+                Debug.Log("failed: " + response.Error);
+            }
+        });
     }
 }
