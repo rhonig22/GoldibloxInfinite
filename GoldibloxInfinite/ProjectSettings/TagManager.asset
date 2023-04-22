@@ -12,6 +12,7 @@ TagManager:
   - EndTrigger
   - StartTimer
   - AddTime
+  - Enemy
   layers:
   - Default
   - TransparentFX
