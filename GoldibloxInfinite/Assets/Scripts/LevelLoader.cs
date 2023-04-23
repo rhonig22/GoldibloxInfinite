@@ -15,7 +15,7 @@ public class LevelLoader : MonoBehaviour
     private readonly float waitTime = .25f;
     private readonly int[] levelTypeList = new int[] { 
         -1, -1, -1, -1, -1, 1, 2, 1, 3, 0,
-        1, 1, 2, 3, 3, 0, 2 };
+        1, 1, 2, 3, 3, 0, 2, 3, 1, 0 };
     private int[][] levelMap = new int[4][];
     private bool isLoading = false;
 
@@ -24,11 +24,19 @@ public class LevelLoader : MonoBehaviour
     {
         DataManager.currentLevel = SceneManager.GetActiveScene().buildIndex;
         levelMap[0] = new int[] { 10, 13 };
-        levelMap[1] = new int[] { 6, 8 };
+        levelMap[1] = new int[] { 6, 8, 19 };
         levelMap[2] = new int[] { 7, 11, 14, 15, 16 };
-        levelMap[3] = new int[] { 9, 12 };
+        levelMap[3] = new int[] { 9, 12, 17, 18 };
         crossfadeAnimator = crossfade.GetComponent<Animator>();
         DataManager.gameOver.AddListener(GameOver);
+    }
+
+    private void Update()
+    {
+        if (Input.GetButtonDown("Cancel"))
+        {
+            GameOver();
+        }
     }
 
     public void LoadNextLevel()

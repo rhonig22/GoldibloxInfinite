@@ -44,4 +44,10 @@ public class GameOverScreenUI : MonoBehaviour
         DataManager.Instance.Restart();
         SceneManager.LoadScene(LevelLoader.startLevel);
     }
+
+    public void BackToMenu()
+    {
+        DataManager.Instance.Restart();
+        SceneManager.LoadScene(LevelLoader.mainMenu);
+    }
 }

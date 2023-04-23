@@ -50,7 +50,13 @@ public class MainMenuUI : MonoBehaviour
 
     private void SetCurrentName()
     {
-        playerNameInput.text = DataManager.playerData.UserName;
-        nameText.text = DataManager.playerData.UserName;
+        string newName = DataManager.playerData.UserName;
+        if (newName == null)
+        {
+            newName = "Player" + Random.Range(10000, 100000);
+        }
+
+        playerNameInput.text = newName;
+        nameText.text = newName;
     }
 }

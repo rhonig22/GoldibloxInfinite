@@ -14,7 +14,6 @@ public class PlayerController : MonoBehaviour
     private BoxCollider2D boxCollider;
     private SpriteRenderer spriteRenderer;
     private SpawnManager spawnManager;
-    private AudioSource audioSource;
     private Transform eyeTransform;
     private LevelLoader levelLoader;
     
@@ -30,6 +29,7 @@ public class PlayerController : MonoBehaviour
     private float deathWaitTime = 1f;
     private float teleportCooldownTime = .8f;
     private float horizontalInput = 0f;
+    private float beepWaitTime = .7f;
     private bool facingRight = true;
     private bool canTeleport = true;
     private bool grounded = false;
@@ -41,13 +41,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip jumpSound;
     [SerializeField] private AudioClip dashSound;
     [SerializeField] private AudioClip deathSound;
+    [SerializeField] private AudioClip beepSound;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject eye;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioSource beepAudioSource;
     private float movementSmoothing = .001f;
     public bool isEndgame { get; private set; } = false;
     public bool isTeleporting { get; private set; } = false;
     public bool isDead { get; private set; } = false;
     public UnityEvent startEndCredits = new UnityEvent();
+    private List<GameObject> jumpsToReset = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
@@ -56,7 +60,6 @@ public class PlayerController : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         spawnManager = GameObject.Find("SpawnManager")?.GetComponent<SpawnManager>();
-        audioSource = GetComponent<AudioSource>();
         eyeTransform = eye.GetComponent<Transform>();
         levelLoader = GameObject.Find("LevelLoader")?.GetComponent<LevelLoader>();
     }
@@ -100,6 +103,9 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isDead)
+            return;
+
         if (isTeleporting)
         {
             Move((facingRight ? 1 : -1) * teleportDistance * Time.fixedDeltaTime / teleportTime);
@@ -190,7 +196,16 @@ public class PlayerController : MonoBehaviour
             animator.ResetTrigger("jump");
             jumps = 0;
             CompleteAddTimeLogic();
+            ResetJumps();
         }
+    }
+
+    private void ResetJumps()
+    {
+        for (int i = 0; i < jumpsToReset.Count; i++)
+            jumpsToReset[i].SetActive(true);
+        
+        jumpsToReset.Clear();
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -262,7 +277,8 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Jump"))
         {
-            Destroy(collision.gameObject);
+            collision.gameObject.SetActive(false);
+            jumpsToReset.Add(collision.gameObject);
             jumps++;
         }
 
@@ -289,7 +305,7 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("StartTimer"))
         {
-            DataManager.Instance.StartTimer();
+            StartCoroutine(StartTimerLogic());
         }
     }
 
@@ -320,6 +336,23 @@ public class PlayerController : MonoBehaviour
         {
             DataManager.Instance.AddTime(additionalTime);
             additionalTime = 0;
+        }
+    }
+
+    private IEnumerator StartTimerLogic()
+    {
+        if (!DataManager.countdownOn)
+        {
+            beepAudioSource.clip = beepSound;
+            beepAudioSource.pitch = .5f;
+            beepAudioSource.Play();
+            yield return new WaitForSeconds(beepWaitTime);
+            beepAudioSource.Play();
+            yield return new WaitForSeconds(beepWaitTime);
+            beepAudioSource.pitch = 2f;
+            beepAudioSource.Play();
+            beepAudioSource.pitch = 1f;
+            DataManager.Instance.StartTimer();
         }
     }
 
@@ -387,10 +420,7 @@ public class PlayerController : MonoBehaviour
     {
         isDead= true;
         DataManager.Instance.IncreaseDeath();
-        currentVelocity = playerRB.velocity;
-        currentVelocity.x = 0;
-        currentVelocity.y = 0;
-        playerRB.velocity = currentVelocity;
+        playerRB.velocity = Vector2.zero;
         playerRB.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
         FlipEye(true);
         animator.SetBool("isDead", true);

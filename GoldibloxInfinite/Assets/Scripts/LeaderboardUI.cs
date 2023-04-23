@@ -43,6 +43,6 @@ public class LeaderboardUI : MonoBehaviour
 
     private void AddItemToScoreList(LootLockerLeaderboardMember item, TextMeshProUGUI scoreList)
     {
-        scoreList.text += item.rank + ".\t" + item.player.name + "\t" + item.score + "\r\n";
+        scoreList.text += item.rank + "  " + item.player.name + "\t" + item.score + "\r\n";
     }
 }
