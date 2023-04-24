@@ -14,7 +14,7 @@ public class GameOverScreenUI : MonoBehaviour
     private int roomValue = 100;
     private int deathValue = -20;
     private int timeValue = 1;
-    private int bonusValue = 200;
+    private int bonusValue = 2000;
     private float waitTime = .5f;
 
     // Start is called before the first frame update
