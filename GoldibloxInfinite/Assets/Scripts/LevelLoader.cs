@@ -12,16 +12,18 @@ public class LevelLoader : MonoBehaviour
     public static readonly int leaderboard = 2;
     public static readonly int startLevel = 3;
     public static readonly int startTimerLevel = 5;
+    public static readonly int credits = 23;
     private static readonly float waitTime = .25f;
-    private static readonly int[][] levelTypeList = new int[23][] {
+    private static readonly int[][] levelTypeList = new int[24][] {
         new int[2] { -1, -1 }, new int[2] { -1, -1 }, new int[2] { -1, -1 }, new int[2] { -1, -1 }, new int[2] { -1, -1 },
         new int[2] { -1, 1 }, new int[2] { 3, 2 }, new int[2] { 0, 1 }, new int[2] { 3, 3 }, new int[2] { 1, 0 },
         new int[2] { 2, 1 }, new int[2] { 0, 1 }, new int[2] { 1, 2 }, new int[2] { 2, 3 }, new int[2] { 0, 3 },
         new int[2] { 0, 0 }, new int[2] { 0, 2 }, new int[2] { 1, 3 }, new int[2] { 1, 1 }, new int[2] { 3, 0 },
-        new int[2] { 3, 1 }, new int[2] { 2, 0 }, new int[2] { 2, 2 }};
+        new int[2] { 3, 1 }, new int[2] { 2, 0 }, new int[2] { 2, 2 }, new int[2] { -1, -1 }};
     private static readonly int[] exitToEntrance = new int[] { 2, 3, 0, 1 };
     private static readonly int easyRoomCount = 11;
-    private static readonly int easyBuffer = 5;
+    private static readonly int totalRoomCount = 19;
+    private static readonly int easyBuffer = 4;
     private static int[][] levelMapEasy = new int[4][] {
         new int[] { 7, 11, 14, 16 },
         new int[] { 9, 18 },
@@ -66,6 +68,9 @@ public class LevelLoader : MonoBehaviour
         isLoading= false;
         int nextLevel;
         DataManager.visitedRooms.Add(DataManager.currentLevel);
+        if (DataManager.visitedRooms.Count == totalRoomCount)
+            DataManager.Instance.AddBonus();
+
         if (DataManager.currentLevel == startLevel)
             nextLevel = startTimerLevel;
         else
@@ -77,6 +82,7 @@ public class LevelLoader : MonoBehaviour
                 nextOptions.AddRange(levelMapHard[nextLevelType]);
             }
 
+            nextOptions.Remove(DataManager.currentLevel);
             int nextIndex = Random.Range(0, nextOptions.Count);
             nextLevel = nextOptions[nextIndex];
         }

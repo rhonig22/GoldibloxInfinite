@@ -16,6 +16,7 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         playerInstance = Instantiate(player);
+        playerInstance.GetComponent<AudioSource>().volume = DataManager.effectsVolume;
         ResetPlayerLocation(DataManager.currentCheckPointIndex);
         StartCoroutine(StartPlayer());
     }

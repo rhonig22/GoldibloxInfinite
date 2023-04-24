@@ -21,6 +21,7 @@ public class DataManager : MonoBehaviour
 
     public static int currentLevel = 1;
     public static float timer { get; private set; } = 60;
+    public static float effectsVolume { get; private set; } = 1f;
     public static UnityEvent gameOver = new UnityEvent();
     public static UnityEvent userDataRetrieved = new UnityEvent();
     public static HashSet<int> visitedRooms = new HashSet<int>();
@@ -74,6 +75,16 @@ public class DataManager : MonoBehaviour
     public void IncreaseRooms()
     {
         roomCount++;
+    }
+
+    public void AddBonus()
+    {
+        bonusCount++;
+    }
+
+    public void SetEffectsVolume(float vol)
+    {
+        effectsVolume = vol;
     }
 
     public void StartTimer()

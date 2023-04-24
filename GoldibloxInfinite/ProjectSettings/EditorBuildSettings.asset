@@ -74,4 +74,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Rooms - South/S4.unity
     guid: c6c65e15119495946a96c4c2099d1b5d
+  - enabled: 1
+    path: Assets/Scenes/Menus/Credits.unity
+    guid: f82be9902c5c92b46934e009a8cae4e0
   m_configObjects: {}

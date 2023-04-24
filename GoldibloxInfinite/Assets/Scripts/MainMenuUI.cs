@@ -30,6 +30,11 @@ public class MainMenuUI : MonoBehaviour
         SceneManager.LoadScene(LevelLoader.leaderboard);
     }
 
+    public void CreditsClicked()
+    {
+        SceneManager.LoadScene(LevelLoader.credits);
+    }
+
     public void EditNameClicked()
     {
         ViewName.SetActive(false);
@@ -51,12 +56,26 @@ public class MainMenuUI : MonoBehaviour
     private void SetCurrentName()
     {
         string newName = DataManager.playerData.UserName;
-        if (newName == null)
+        bool submit = false;
+        if (newName == null || newName == string.Empty)
         {
             newName = "Player" + Random.Range(10000, 100000);
+            submit = true;
         }
 
         playerNameInput.text = newName;
         nameText.text = newName;
+        if (submit)
+            SubmitNameClicked();
+    }
+
+    public void SetMusicVolume(float vol)
+    {
+        GameObject.Find("MusicSource").GetComponent<AudioSource>().volume = vol;
+    }
+
+    public void SetEffectsVolume(float vol)
+    {
+        DataManager.Instance.SetEffectsVolume(vol);
     }
 }
