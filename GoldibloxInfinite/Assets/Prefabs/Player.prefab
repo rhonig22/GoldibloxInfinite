@@ -173,6 +173,7 @@ MonoBehaviour:
   - {fileID: 4930748651381171005}
   audioSource: {fileID: -293313233005077123}
   beepAudioSource: {fileID: 5366276635964674069}
+  jumpParticles: {fileID: 0}
   startEndCredits:
     m_PersistentCalls:
       m_Calls: []
@@ -394,7 +395,7 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   m_ShapePathHash: 0
   m_Mesh: {fileID: 0}
-  m_InstanceId: 2783144
+  m_InstanceId: 62880
 --- !u!95 &-3141761027747822828
 Animator:
   serializedVersion: 5
