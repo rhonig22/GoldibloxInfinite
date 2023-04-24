@@ -297,9 +297,7 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Jump"))
         {
-            collision.gameObject.SetActive(false);
-            jumpsToReset.Add(collision.gameObject);
-            Jumps++;
+            GetExtraJumpLogic(collision);
         }
 
         if (collision.gameObject.CompareTag("EndTrigger"))
@@ -343,6 +341,14 @@ public class PlayerController : MonoBehaviour
         {
             TestLightCollision(collision);
         }
+    }
+
+    private void GetExtraJumpLogic(Collider2D collision)
+    {
+        collision.gameObject.transform.parent.GetComponentInChildren<ParticleSystem>().Play();
+        collision.gameObject.SetActive(false);
+        jumpsToReset.Add(collision.gameObject);
+        Jumps++;
     }
 
     private void AddTimeLogic()
@@ -436,7 +442,7 @@ public class PlayerController : MonoBehaviour
         for (int i = 0; i < hits.Length; i++)
         {
             RaycastHit2D hit = hits[i];
-            if (hit.collider != boxCollider && hit.collider != collision)
+            if (hit.collider != boxCollider && hit.collider != collision && hit.collider.gameObject.CompareTag("Solid"))
             {
                 blocked = true;
                 break;

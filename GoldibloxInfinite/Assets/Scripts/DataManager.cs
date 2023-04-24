@@ -79,7 +79,7 @@ public class DataManager : MonoBehaviour
 
     public void AddBonus()
     {
-        bonusCount++;
+        bonusCount = 1;
     }
 
     public void SetEffectsVolume(float vol)

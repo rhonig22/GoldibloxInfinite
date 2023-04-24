@@ -11,6 +11,9 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] GameObject ViewName;
     [SerializeField] GameObject EditName;
     [SerializeField] TextMeshProUGUI nameText;
+    [SerializeField] GameObject hiddenControlsText;
+    [SerializeField] GameObject controlsText;
+    private readonly int maxLength = 24;
 
     // Start is called before the first frame update
     void Start()
@@ -39,18 +42,39 @@ public class MainMenuUI : MonoBehaviour
     {
         ViewName.SetActive(false);
         EditName.SetActive(true);
+        controlsText.SetActive(false);
+        hiddenControlsText.SetActive(true);
+    }
+
+    private void ShowName()
+    {
+        ViewName.SetActive(true);
+        EditName.SetActive(false);
+        controlsText.SetActive(true);
+        hiddenControlsText.SetActive(false);
     }
 
     public void SubmitNameClicked()
     {
-        DataManager.Instance.SetUserName(playerNameInput.text, (string name) => {
-            if (name != null)
+        string newName = playerNameInput.text;
+        if (newName == null || newName.Length > maxLength)
+            newName = newName.Substring(0, maxLength);
+
+        if (newName != DataManager.playerData.UserName)
+        {
+            DataManager.Instance.SetUserName(newName, (string name) =>
             {
-                SetCurrentName();
-                ViewName.SetActive(true);
-                EditName.SetActive(false);
-            }
-        });
+                if (name != null)
+                {
+                    SetCurrentName();
+                    ShowName();
+                }
+            });
+        }
+        else
+        {
+            ShowName();
+        }
     }
 
     private void SetCurrentName()

@@ -77,4 +77,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Menus/Credits.unity
     guid: f82be9902c5c92b46934e009a8cae4e0
+  - enabled: 1
+    path: Assets/Scenes/Rooms - West/W5.unity
+    guid: 08b4e5e7f0d2d6a428ca385508abf538
+  - enabled: 1
+    path: Assets/Scenes/Rooms - West/W6.unity
+    guid: 595d76e620e0b7248a30f5f4d2e03122
+  - enabled: 1
+    path: Assets/Scenes/Rooms - East/E5.unity
+    guid: 1d2c2a32e0edd464595f68245bd082b5
   m_configObjects: {}
