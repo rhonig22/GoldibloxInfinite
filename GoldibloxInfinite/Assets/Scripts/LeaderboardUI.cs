@@ -8,8 +8,10 @@ using UnityEngine.UI;
 
 public class LeaderboardUI : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI TopTen;
-    [SerializeField] TextMeshProUGUI TopTwenty;
+    [SerializeField] TextMeshProUGUI TopTenNames;
+    [SerializeField] TextMeshProUGUI TopTwentyNames;
+    [SerializeField] TextMeshProUGUI TopTenScores;
+    [SerializeField] TextMeshProUGUI TopTwentyScores;
 
     // Start is called before the first frame update
     void Start()
@@ -24,25 +26,28 @@ public class LeaderboardUI : MonoBehaviour
 
     private void PopulateHighScores()
     {
-        TopTen.text = string.Empty;
-        TopTwenty.text = string.Empty;
+        TopTenNames.text = string.Empty;
+        TopTwentyNames.text = string.Empty;
+        TopTenScores.text = string.Empty;
+        TopTwentyScores.text = string.Empty;
 
         DataManager.Instance.GetHighScores(20, (items) =>
         {
             for (int i = 0; i < 10 && i < items.Length; i++)
             {
-                AddItemToScoreList(items[i], TopTen);
+                AddItemToScoreList(items[i], TopTenNames, TopTenScores);
             }
 
             for (int i = 10; i < 20 && i < items.Length; i++)
             {
-                AddItemToScoreList(items[i], TopTwenty);
+                AddItemToScoreList(items[i], TopTwentyNames, TopTwentyScores);
             }
         });
     }
 
-    private void AddItemToScoreList(LootLockerLeaderboardMember item, TextMeshProUGUI scoreList)
+    private void AddItemToScoreList(LootLockerLeaderboardMember item, TextMeshProUGUI nameList, TextMeshProUGUI scoreList)
     {
-        scoreList.text += item.rank + "  " + item.player.name + "\t" + item.score + "\r\n";
+        nameList.text += item.player.name + "\r\n";
+        scoreList.text += item.score + "\r\n";
     }
 }

@@ -12,21 +12,32 @@ public class LevelLoader : MonoBehaviour
     public static readonly int leaderboard = 2;
     public static readonly int startLevel = 3;
     public static readonly int startTimerLevel = 5;
-    private readonly float waitTime = .25f;
-    private readonly int[] levelTypeList = new int[] { 
-        -1, -1, -1, -1, -1, 1, 2, 1, 3, 0,
-        1, 1, 2, 3, 3, 0, 2, 3, 1, 0 };
-    private int[][] levelMap = new int[4][];
+    private static readonly float waitTime = .25f;
+    private static readonly int[][] levelTypeList = new int[23][] {
+        new int[2] { -1, -1 }, new int[2] { -1, -1 }, new int[2] { -1, -1 }, new int[2] { -1, -1 }, new int[2] { -1, -1 },
+        new int[2] { -1, 1 }, new int[2] { 3, 2 }, new int[2] { 0, 1 }, new int[2] { 3, 3 }, new int[2] { 1, 0 },
+        new int[2] { 2, 1 }, new int[2] { 0, 1 }, new int[2] { 1, 2 }, new int[2] { 2, 3 }, new int[2] { 0, 3 },
+        new int[2] { 0, 0 }, new int[2] { 0, 2 }, new int[2] { 1, 3 }, new int[2] { 1, 1 }, new int[2] { 3, 0 },
+        new int[2] { 3, 1 }, new int[2] { 2, 0 }, new int[2] { 2, 2 }};
+    private static readonly int[] exitToEntrance = new int[] { 2, 3, 0, 1 };
+    private static readonly int easyRoomCount = 11;
+    private static readonly int easyBuffer = 5;
+    private static int[][] levelMapEasy = new int[4][] {
+        new int[] { 7, 11, 14, 16 },
+        new int[] { 9, 18 },
+        new int[] { 10, 13 },
+        new int[] { 6 }};
+    private static int[][] levelMapHard = new int[4][] {
+        new int[] { 15 },
+        new int[] { 12, 17 },
+        new int[] { 21, 22 },
+        new int[] { 8, 19, 20 }};
     private bool isLoading = false;
 
     // Start is called before the first frame update
     void Start()
     {
         DataManager.currentLevel = SceneManager.GetActiveScene().buildIndex;
-        levelMap[0] = new int[] { 10, 13 };
-        levelMap[1] = new int[] { 6, 8, 19 };
-        levelMap[2] = new int[] { 7, 11, 14, 15, 16 };
-        levelMap[3] = new int[] { 9, 12, 17, 18 };
         crossfadeAnimator = crossfade.GetComponent<Animator>();
         DataManager.gameOver.AddListener(GameOver);
     }
@@ -54,13 +65,19 @@ public class LevelLoader : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         isLoading= false;
         int nextLevel;
+        DataManager.visitedRooms.Add(DataManager.currentLevel);
         if (DataManager.currentLevel == startLevel)
             nextLevel = startTimerLevel;
         else
         {
-            int nextLevelType = levelTypeList[DataManager.currentLevel];
-            int[] nextOptions = levelMap[nextLevelType];
-            int nextIndex = Random.Range(0, nextOptions.Length);
+            int nextLevelType = exitToEntrance[levelTypeList[DataManager.currentLevel][1]];
+            List<int> nextOptions = new List<int>(levelMapEasy[nextLevelType]);
+            if (DataManager.visitedRooms.Count >= easyRoomCount - easyBuffer)
+            {
+                nextOptions.AddRange(levelMapHard[nextLevelType]);
+            }
+
+            int nextIndex = Random.Range(0, nextOptions.Count);
             nextLevel = nextOptions[nextIndex];
         }
 
