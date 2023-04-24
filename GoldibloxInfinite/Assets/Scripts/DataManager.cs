@@ -23,6 +23,7 @@ public class DataManager : MonoBehaviour
     public static float timer { get; private set; } = 60;
     public static UnityEvent gameOver = new UnityEvent();
     public static UnityEvent userDataRetrieved = new UnityEvent();
+    public static HashSet<int> visitedRooms = new HashSet<int>();
     private readonly int plusTime = 10;
     private readonly string leaderboardID = "goldiblox_leaderboard";
 
@@ -96,6 +97,7 @@ public class DataManager : MonoBehaviour
         bonusCount = 0;
         countdownOn = false;
         timer = 60;
+        visitedRooms.Clear();
     }
 
     private void StartLootLockerSession()

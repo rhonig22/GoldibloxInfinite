@@ -16,11 +16,11 @@ public class PlayerController : MonoBehaviour
     private SpawnManager spawnManager;
     private Transform eyeTransform;
     private LevelLoader levelLoader;
-    
+    private List<GameObject> jumpsToReset = new List<GameObject>();
     private int jumpForce = 11;
     private int additionalJumpForce = 9;
     private int speed = 8;
-    private int jumps = 0;
+    private int _jumps = 0;
     private int additionalTime = 0;
     private const int originalGravity = 2;
     private float teleportDistance = 2.5f;
@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     private float teleportCooldownTime = .8f;
     private float horizontalInput = 0f;
     private float beepWaitTime = .7f;
+    private float movementSmoothing = .001f;
     private bool facingRight = true;
     private bool canTeleport = true;
     private bool grounded = false;
@@ -41,17 +42,36 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip jumpSound;
     [SerializeField] private AudioClip dashSound;
     [SerializeField] private AudioClip deathSound;
+    [SerializeField] private AudioClip plusTimeSound;
     [SerializeField] private AudioClip beepSound;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject eye;
+    [SerializeField] private GameObject plusTime;
+    [SerializeField] private GameObject[] extraJumps;
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioSource beepAudioSource;
-    private float movementSmoothing = .001f;
     public bool isEndgame { get; private set; } = false;
     public bool isTeleporting { get; private set; } = false;
     public bool isDead { get; private set; } = false;
     public UnityEvent startEndCredits = new UnityEvent();
-    private List<GameObject> jumpsToReset = new List<GameObject>();
+    public int Jumps
+    {
+        get
+        {
+            return _jumps;
+        }
+        private set
+        {
+            _jumps = value;
+            for (int i = 0; i < extraJumps.Length; i++)
+            {
+                if (i < _jumps)
+                    extraJumps[i].SetActive(true);
+                else
+                    extraJumps[i].SetActive(false);
+            }
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -95,7 +115,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // Control jumping
-        if (Input.GetButtonDown("Jump") && (grounded || jumps > 0))
+        if (Input.GetButtonDown("Jump") && (grounded || Jumps > 0))
         {
             jump = true;
         }
@@ -156,7 +176,7 @@ public class PlayerController : MonoBehaviour
         playerRB.velocity = currentVelocity;
         if (!grounded)
         {
-            jumps--;
+            Jumps--;
             animator.ResetTrigger("jump");
         }
 
@@ -194,7 +214,7 @@ public class PlayerController : MonoBehaviour
         if (!startGrounded && grounded && !isDead)
         {
             animator.ResetTrigger("jump");
-            jumps = 0;
+            Jumps = 0;
             CompleteAddTimeLogic();
             ResetJumps();
         }
@@ -279,7 +299,7 @@ public class PlayerController : MonoBehaviour
         {
             collision.gameObject.SetActive(false);
             jumpsToReset.Add(collision.gameObject);
-            jumps++;
+            Jumps++;
         }
 
         if (collision.gameObject.CompareTag("EndTrigger"))
@@ -336,7 +356,17 @@ public class PlayerController : MonoBehaviour
         {
             DataManager.Instance.AddTime(additionalTime);
             additionalTime = 0;
+            plusTime.SetActive(true);
+            audioSource.clip = plusTimeSound;
+            audioSource.Play();
+            StartCoroutine(HidePlusTime());
         }
+    }
+
+    private IEnumerator HidePlusTime()
+    {
+        yield return new WaitForSeconds(1f);
+        plusTime.SetActive(false);
     }
 
     private IEnumerator StartTimerLogic()
