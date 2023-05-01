@@ -14,12 +14,13 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] GameObject hiddenControlsText;
     [SerializeField] GameObject controlsText;
     private readonly int maxLength = 24;
+    private readonly float maxMusicVolume = 0.8f;
 
     // Start is called before the first frame update
     void Start()
     {
         DataManager.userDataRetrieved.AddListener(SetCurrentName);
-        if (DataManager.playerData != null)
+        if (DataManager.playerData != null && DataManager.playerData.UserName != string.Empty && DataManager.dataRetrieved)
             SetCurrentName();
     }
 
@@ -95,7 +96,7 @@ public class MainMenuUI : MonoBehaviour
 
     public void SetMusicVolume(float vol)
     {
-        GameObject.Find("MusicSource").GetComponent<AudioSource>().volume = vol;
+        GameObject.Find("MusicSource").GetComponent<AudioSource>().volume = vol * maxMusicVolume;
     }
 
     public void SetEffectsVolume(float vol)
