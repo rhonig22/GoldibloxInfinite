@@ -15,6 +15,7 @@ public class DataManager : MonoBehaviour
     public static int bonusCount { get; private set; } = 0;
     public static int totalTime { get; private set; } = 60;
     public static bool countdownOn { get; private set; } = false;
+    public static bool dataRetrieved { get; private set; } = false;
     public static UserData playerData { get; private set; }
     public static Vector2 playerVelocity { get; private set; }
     public static Vector3 playerPosition { get; private set; }
@@ -41,6 +42,7 @@ public class DataManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         StartLootLockerSession();
+        userDataRetrieved.AddListener(() => { dataRetrieved= true; });
     }
 
     private void Update()
