@@ -30,13 +30,17 @@ public class PlayerController : MonoBehaviour
     private float teleportCooldownTime = .8f;
     private float horizontalInput = 0f;
     private float beepWaitTime = .7f;
-    private float movementSmoothing = .001f;
+    private float movementSmoothing = .05f;
+    private readonly float coyoteTime = .2f;
+    private float coyoteTimeCounter = 0;
+    private readonly float jumpBufferTime = .2f;
+    private float jumpBufferCounter = 0;
     private bool facingRight = true;
     private bool canTeleport = true;
     private bool grounded = false;
     private bool jump = false;
     private bool teleport = false;
-    private Vector3 currentVelocity = Vector3.zero;
+    private Vector2 currentVelocity = Vector2.zero;
     [SerializeField] Material normalMaterial;
     [SerializeField] Material translucent;
     [SerializeField] private AudioClip jumpSound;
@@ -93,7 +97,7 @@ public class PlayerController : MonoBehaviour
         if (isTeleporting)
             return;
 
-        horizontalInput = Input.GetAxis("Horizontal");
+        horizontalInput = Input.GetAxisRaw("Horizontal");
         // Control the sprite for the character
         if (horizontalInput > 0 && !facingRight)
         {
@@ -114,10 +118,30 @@ public class PlayerController : MonoBehaviour
             teleport = true;
         }
 
+        if (grounded)
+        {
+            coyoteTimeCounter = coyoteTime;
+        }
+        else
+        {
+            coyoteTimeCounter -= Time.deltaTime;
+        }
+
+        if (Input.GetButtonDown("Jump"))
+        {
+            jumpBufferCounter = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferCounter -= Time.deltaTime;
+        }
+
         // Control jumping
-        if (Input.GetButtonDown("Jump") && (grounded || Jumps > 0))
+        if (jumpBufferCounter > 0f && (coyoteTimeCounter > 0f || Jumps > 0))
         {
             jump = true;
+            coyoteTimeCounter = 0;
+            jumpBufferCounter = 0;
         }
     }
 
@@ -188,9 +212,9 @@ public class PlayerController : MonoBehaviour
 
     private void Move(float xSpeed)
     {
-        Vector3 targetVelocity = new Vector2(xSpeed * 60f, playerRB.velocity.y);
+        Vector2 targetVelocity = new Vector2(xSpeed * 60f, playerRB.velocity.y);
         // And then smoothing it out and applying it to the character
-        playerRB.velocity = Vector3.SmoothDamp(playerRB.velocity, targetVelocity, ref currentVelocity, movementSmoothing);
+        playerRB.velocity = Vector2.SmoothDamp(playerRB.velocity, targetVelocity, ref currentVelocity, Math.Abs(currentVelocity.x) < Math.Abs(targetVelocity.x) ? movementSmoothing : 0);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -318,6 +342,9 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("AddTime"))
         {
             AddTimeLogic();
+            if (grounded)
+                CompleteAddTimeLogic();
+
             Destroy(collision.gameObject);
         }
 

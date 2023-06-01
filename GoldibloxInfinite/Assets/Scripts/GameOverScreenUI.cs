@@ -17,9 +17,17 @@ public class GameOverScreenUI : MonoBehaviour
     private int bonusValue = 2000;
     private float waitTime = .5f;
 
+    [SerializeField] TMP_InputField playerNameInput;
+    [SerializeField] GameObject ViewName;
+    [SerializeField] GameObject EditName;
+    [SerializeField] TextMeshProUGUI nameText;
+    private readonly int maxLength = 24;
+
     // Start is called before the first frame update
     void Start()
     {
+        if (DataManager.playerData != null && DataManager.playerData.UserName != string.Empty && DataManager.dataRetrieved)
+            SetCurrentName();
         StartCoroutine(LoadScores());
     }
 
@@ -49,5 +57,56 @@ public class GameOverScreenUI : MonoBehaviour
     {
         DataManager.Instance.Restart();
         SceneManager.LoadScene(LevelLoader.mainMenu);
+    }
+
+    public void EditNameClicked()
+    {
+        ViewName.SetActive(false);
+        EditName.SetActive(true);
+    }
+
+    private void ShowName()
+    {
+        ViewName.SetActive(true);
+        EditName.SetActive(false);
+    }
+
+    public void SubmitNameClicked()
+    {
+        string newName = playerNameInput.text;
+        if (newName == null || newName.Length > maxLength)
+            newName = newName.Substring(0, maxLength);
+
+        if (newName != DataManager.playerData.UserName)
+        {
+            DataManager.Instance.SetUserName(newName, (string name) =>
+            {
+                if (name != null)
+                {
+                    SetCurrentName();
+                    ShowName();
+                }
+            });
+        }
+        else
+        {
+            ShowName();
+        }
+    }
+
+    private void SetCurrentName()
+    {
+        string newName = DataManager.playerData.UserName;
+        bool submit = false;
+        if (newName == null || newName == string.Empty)
+        {
+            newName = "Player" + Random.Range(10000, 100000);
+            submit = true;
+        }
+
+        playerNameInput.text = newName;
+        nameText.text = newName;
+        if (submit)
+            SubmitNameClicked();
     }
 }

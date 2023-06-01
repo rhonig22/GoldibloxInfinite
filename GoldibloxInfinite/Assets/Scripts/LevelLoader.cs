@@ -13,22 +13,23 @@ public class LevelLoader : MonoBehaviour
     public static readonly int startLevel = 3;
     public static readonly int startTimerLevel = 5;
     public static readonly int credits = 23;
+    public static readonly int options = 28;
     private static readonly float waitTime = .25f;
-    private static readonly int[][] levelTypeList = new int[28][] {
+    private static readonly int[][] levelTypeList = new int[30][] {
         new int[2] { -1, -1 }, new int[2] { -1, -1 }, new int[2] { -1, -1 }, new int[2] { -1, -1 }, new int[2] { -1, -1 },
         new int[2] { -1, 1 }, new int[2] { 3, 2 }, new int[2] { 0, 1 }, new int[2] { 3, 3 }, new int[2] { 1, 0 },
         new int[2] { 2, 1 }, new int[2] { 0, 1 }, new int[2] { 1, 2 }, new int[2] { 2, 3 }, new int[2] { 0, 3 },
         new int[2] { 0, 0 }, new int[2] { 0, 2 }, new int[2] { 1, 3 }, new int[2] { 1, 1 }, new int[2] { 3, 0 },
         new int[2] { 3, 1 }, new int[2] { 2, 0 }, new int[2] { 2, 2 }, new int[2] { -1, -1 }, new int[2] { 3, 2 },
-        new int[2] { 3, 0 }, new int[2] { 1, 0 }, new int[2] { 2, 1 }};
+        new int[2] { 3, 0 }, new int[2] { 1, 0 }, new int[2] { 2, 1 }, new int[2] { -1, -1 }, new int[2] { 2, 0 }};
     private static readonly int[] exitToEntrance = new int[] { 2, 3, 0, 1 };
     private static readonly int easyRoomCount = 14;
     private static readonly int totalRoomCount = 22;
-    private static readonly int easyBuffer = 4;
+    private static readonly int easyBuffer = 2;
     private static int[][] levelMapEasy = new int[4][] {
         new int[] { 7, 11, 14, 16 },
         new int[] { 9, 18 },
-        new int[] { 10, 13, 27 },
+        new int[] { 10, 13, 27, 29},
         new int[] { 6, 24, 25 }};
     private static int[][] levelMapHard = new int[4][] {
         new int[] { 15 },
@@ -83,7 +84,17 @@ public class LevelLoader : MonoBehaviour
                 nextOptions.AddRange(levelMapHard[nextLevelType]);
             }
 
+            var options = nextOptions.ToArray();
             nextOptions.Remove(DataManager.currentLevel);
+            for (int i = nextOptions.Count - 1; i >= 0; i--)
+            {
+                if (DataManager.visitedRooms.Contains(nextOptions[i]))
+                    nextOptions.RemoveAt(i);
+            }
+
+            if (nextOptions.Count == 0)
+                nextOptions.AddRange(options);
+
             int nextIndex = Random.Range(0, nextOptions.Count);
             nextLevel = nextOptions[nextIndex];
         }
