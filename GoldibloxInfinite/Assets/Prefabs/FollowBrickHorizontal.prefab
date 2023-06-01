@@ -8,12 +8,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 821803069879642648, guid: 2f88f9c7bc8ba2147b1ec717eaa09e15, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 821803069879642648, guid: 2f88f9c7bc8ba2147b1ec717eaa09e15, type: 3}
       propertyPath: m_Color.g
-      value: 0.105882354
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 821803069879642648, guid: 2f88f9c7bc8ba2147b1ec717eaa09e15, type: 3}
       propertyPath: m_Color.r
-      value: 0.37254903
+      value: 0.4509804
       objectReference: {fileID: 0}
     - target: {fileID: 4451022569588634601, guid: 2f88f9c7bc8ba2147b1ec717eaa09e15, type: 3}
       propertyPath: m_Size.x
@@ -25,7 +29,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5421539018335646060, guid: 2f88f9c7bc8ba2147b1ec717eaa09e15, type: 3}
       propertyPath: m_Name
-      value: FollowBrick
+      value: FollowBrickHorizontal
       objectReference: {fileID: 0}
     - target: {fileID: 6076919084014445056, guid: 2f88f9c7bc8ba2147b1ec717eaa09e15, type: 3}
       propertyPath: m_Mesh
@@ -33,7 +37,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6076919084014445056, guid: 2f88f9c7bc8ba2147b1ec717eaa09e15, type: 3}
       propertyPath: m_InstanceId
-      value: -644866
+      value: -77102
       objectReference: {fileID: 0}
     - target: {fileID: 6076919084014445056, guid: 2f88f9c7bc8ba2147b1ec717eaa09e15, type: 3}
       propertyPath: m_HasRenderer

@@ -11,8 +11,6 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] GameObject ViewName;
     [SerializeField] GameObject EditName;
     [SerializeField] TextMeshProUGUI nameText;
-    [SerializeField] GameObject hiddenControlsText;
-    [SerializeField] GameObject controlsText;
     private readonly int maxLength = 24;
     private readonly float maxMusicVolume = 0.8f;
 
@@ -39,20 +37,26 @@ public class MainMenuUI : MonoBehaviour
         SceneManager.LoadScene(LevelLoader.credits);
     }
 
+    public void ReturnToMenuClicked()
+    {
+        SceneManager.LoadScene(LevelLoader.mainMenu);
+    }
+
+    public void OptionsClicked()
+    {
+        SceneManager.LoadScene(LevelLoader.options);
+    }
+
     public void EditNameClicked()
     {
         ViewName.SetActive(false);
         EditName.SetActive(true);
-        controlsText.SetActive(false);
-        hiddenControlsText.SetActive(true);
     }
 
     private void ShowName()
     {
         ViewName.SetActive(true);
         EditName.SetActive(false);
-        controlsText.SetActive(true);
-        hiddenControlsText.SetActive(false);
     }
 
     public void SubmitNameClicked()
@@ -88,8 +92,12 @@ public class MainMenuUI : MonoBehaviour
             submit = true;
         }
 
-        playerNameInput.text = newName;
-        nameText.text = newName;
+        if (playerNameInput != null)
+            playerNameInput.text = newName;
+
+        if (nameText != null)
+            nameText.text = newName;
+
         if (submit)
             SubmitNameClicked();
     }

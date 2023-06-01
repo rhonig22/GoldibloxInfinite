@@ -89,4 +89,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Rooms - South/S6.unity
     guid: a25ebdf63642a864f8e65fa4ecfd4cf7
+  - enabled: 1
+    path: Assets/Scenes/Menus/Options.unity
+    guid: c518759552349af49a23bd7a408c4e0a
+  - enabled: 1
+    path: Assets/Scenes/Rooms - South/S7.unity
+    guid: 57fffe2634df9194ca0edad566fad3dd
   m_configObjects: {}
